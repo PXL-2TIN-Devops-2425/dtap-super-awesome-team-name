@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        // DockerHub credentials are injected using Jenkins credentials store
-        DOCKER_CREDENTIALS = credentials('dockerhub-credentials')  // Ensure this matches your Jenkins credentials ID
+        // Define DockerHub credentials
+        DOCKER_USER = credentials('dockerhub-credentials')  // DockerHub username and password from Jenkins credentials store
     }
     tools {
         nodejs 'testenvnode'  // Use the global Node.js configuration named 'testenvnode'
@@ -20,8 +20,8 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'main',
-                    credentialsId: 'github',  // Ensure the GitHub credentials ID is correct
+                git branch: 'main', 
+                    credentialsId: 'github', 
                     url: 'https://github.com/RikVangeelPXL/calculator-app-finished.git'
             }
         }
@@ -34,18 +34,17 @@ pipeline {
             }
         }
 
-        // Stage 4: Build Artifact - Build the Docker image for the application using traditional docker build
+        // Stage 4: Build Artifact - Build the Docker image for the application
         stage('Build Artifact') {
             steps {
                 echo 'Building Docker image...'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                   usernameVariable: 'DOCKER_USERNAME', 
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
-                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
+                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Optional: for debugging
                     sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    DOCKER_BUILDKIT=0 docker build --no-cache -t $DOCKER_USERNAME/calculator-app .  # Disable Buildx and use traditional docker build
-                    docker images  // Debugging line to confirm the image was built and tagged correctly
+                    /bin/bash -c "echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin"
+                    /bin/bash -c "docker build -t '$DOCKER_USERNAME/calculator-app' ."
                     '''
                 }
             }
@@ -58,39 +57,26 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                   usernameVariable: 'DOCKER_USERNAME', 
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
-                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker images  // List the images to confirm the build and tagging
-                    if docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "$DOCKER_USERNAME/calculator-app:latest"; then  // Check if the image exists
-                        echo "Image exists, pushing to DockerHub..."
-                        docker push $DOCKER_USERNAME/calculator-app:latest  // Push the image to DockerHub with 'latest' tag
-                    else
-                        echo "Error: Image not found!"
-                        exit 1  // Exit with an error if the image is not found
-                    fi
+                    /bin/bash -c "echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin"
+                    /bin/bash -c "docker push '$DOCKER_USERNAME/calculator-app'"
                     '''
                 }
             }
         }
-
 
         // Stage 6: Deploy on Testserver - Start the Docker container on the test server
         stage('Deploy on Testserver') {
             steps {
                 echo 'Deploying on testserver...'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
-                                                  usernameVariable: 'DOCKER_USERNAME', 
-                                                  passwordVariable: 'DOCKER_PASSWORD')]) {
-                    echo "Using Docker image: $DOCKER_USERNAME/calculator-app"  // Debugging line to confirm the correct image name
-                    sh '''
-                    docker stop calculator-app || true  // Stop the old container if running
-                    docker rm calculator-app || true  // Remove the old container
-                    docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app  // Start the new container
-                    '''
-                }
+                sh '''
+                /bin/bash -c "docker stop calculator-app || true"
+                /bin/bash -c "docker rm calculator-app || true"
+                /bin/bash -c "docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app"
+                '''
             }
         }
     }
 }
+
 
