@@ -1,50 +1,61 @@
 pipeline {
     agent any
     tools {
-        nodejs 'TINnode-devops'  // Gebruik de Node.js configuratie die je hebt ingesteld
+        nodejs 'testenvnode'  // Gebruik de globale Node.js configuratie met naam 'testenvnode'
     }
     stages {
+        // Stage 1: Cleanup - Verwijdert alle bestanden in de workspace om schoon te beginnen
         stage('Cleanup') {
             steps {
                 echo 'Cleaning up workspace...'
-                sh 'rm -rf *'  // Verwijder alle bestanden in de workspace
+                sh 'rm -rf *'  // Verwijdert alle bestanden in de werkdirectory
             }
         }
+
+        // Stage 2: Clone Repository - Haalt de applicatiecode van de repository
         stage('Clone Repository') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'main', url: 'https://github.com/PXL-2TIN-DevOps-Resources/calculator-app-finished.git'
+                git branch: 'main', url: 'https://github.com/your-repo/calculator-app-finished.git'
             }
         }
+
+        // Stage 3: Install Dependencies - Installeer de benodigde npm dependencies
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'npm install'  // Installeer Node.js dependencies
+                sh 'npm install'  // Voer 'npm install' uit om de dependencies te installeren
             }
         }
+
+        // Stage 4: Build Artifact - Bouw de Docker-image voor de applicatie
         stage('Build Artifact') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t your-dockerhub-user/calculator-app .'  // Bouw de Docker container
+                sh 'docker build -t your-dockerhub-user/calculator-app .'  // Bouw de Docker-image
             }
         }
+
+        // Stage 5: Push Artifact - Push de Docker-image naar DockerHub
         stage('Push Artifact') {
             steps {
                 echo 'Pushing Docker image to DockerHub...'
                 withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKERHUB_PASS')]) {
                     sh '''
                     echo "$DOCKERHUB_PASS" | docker login -u your-dockerhub-user --password-stdin
-                    docker push your-dockerhub-user/calculator-app  // Push de Docker image naar DockerHub
+                    docker push your-dockerhub-user/calculator-app  // Push de Docker-image naar DockerHub
                     '''
                 }
             }
         }
+
+        // Stage 6: Deploy on Testserver - Start de Docker-container op de testserver
         stage('Deploy on Testserver') {
             steps {
                 echo 'Deploying on testserver...'
                 sh '''
-                docker stop calculator-app || true  // Stop oude container indien actief
-                docker rm calculator-app || true  // Verwijder oude container
+                docker stop calculator-app || true  // Stop de oude container indien actief
+                docker rm calculator-app || true  // Verwijder de oude container
                 docker run -d -p 3000:3000 --name calculator-app your-dockerhub-user/calculator-app  // Start de nieuwe container
                 '''
             }
