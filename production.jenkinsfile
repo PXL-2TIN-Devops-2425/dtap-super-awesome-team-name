@@ -10,7 +10,7 @@ pipeline {
                                   passwordVariable: 'DOCKER_PASSWORD')]) {
                 echo "Using DockerHub username: ${DOCKER_USERNAME}"  // This will print the DockerHub username
                 sh '''
-                docker pull $DOCKER_USERNAME/calculator-app/
+                docker pull $DOCKER_USERNAME/calculator-app
                 '''
                 }
             }
