@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    environment {
+        // Define DockerHub credentials
+        DOCKER_USER = credentials('dockerhub-credentials')
+        DOCKER_USERNAME = "${DOCKER_USER_USR}"
+    }
     stages {
         // Stage 1: Deploy Prod - Haal de laatste versie van de Docker-image van DockerHub
         stage('Deploy Prod') {
