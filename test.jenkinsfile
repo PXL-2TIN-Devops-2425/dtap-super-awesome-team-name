@@ -61,8 +61,14 @@ pipeline {
                     echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker images  // Debugging line to check available images before pushing
-                    docker push $DOCKER_USERNAME/calculator-app:latest  // Push the image to DockerHub with 'latest' tag
+                    docker images  // List the images to confirm the build and tagging
+                    if docker images | grep -q "$DOCKER_USERNAME/calculator-app"; then  // Check if the image is tagged correctly
+                        echo "Image exists, pushing to DockerHub..."
+                        docker push $DOCKER_USERNAME/calculator-app:latest  // Push the image to DockerHub with 'latest' tag
+                    else
+                        echo "Error: Image not found!"
+                        exit 1  // Exit with an error if the image is not found
+                    fi
                     '''
                 }
             }
