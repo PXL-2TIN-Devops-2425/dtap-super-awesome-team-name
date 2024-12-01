@@ -60,11 +60,12 @@ pipeline {
                     echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker push $DOCKER_USERNAME/calculator-app  // Push the image to DockerHub
+                    docker push $DOCKER_USERNAME/calculator-app:latest  // Push the image to DockerHub with 'latest' tag
                     '''
                 }
             }
         }
+
 
         // Stage 6: Deploy on Testserver - Start the Docker container on the test server
         stage('Deploy on Testserver') {
