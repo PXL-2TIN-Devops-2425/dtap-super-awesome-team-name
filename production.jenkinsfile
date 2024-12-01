@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo 'Pulling Docker image from DockerHub...'
                 sh '''
-                docker pull //docker image 
+                docker pull $DOCKER_USERNAME/calculator-app/ //docker image 
                 '''
             }
         }
