@@ -5,9 +5,14 @@ pipeline {
         stage('Deploy Prod') {
             steps {
                 echo 'Pulling Docker image from DockerHub...'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                                  usernameVariable: 'DOCKER_USERNAME', 
+                                  passwordVariable: 'DOCKER_PASSWORD')]) {
+                echo "Using DockerHub username: ${DOCKER_USERNAME}"  // This will print the DockerHub username
                 sh '''
-                docker pull $DOCKER_USERNAME/calculator-app/ //docker image 
+                docker pull $DOCKER_USERNAME/calculator-app/
                 '''
+                }
             }
         }
 
