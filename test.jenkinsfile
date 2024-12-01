@@ -45,6 +45,7 @@ pipeline {
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
                     DOCKER_BUILDKIT=0 docker build --no-cache -t $DOCKER_USERNAME/calculator-app .  # Disable Buildx and use traditional docker build
+                    docker images  // Debugging line to confirm the image was built and tagged correctly
                     '''
                 }
             }
@@ -60,6 +61,7 @@ pipeline {
                     echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker images  // Debugging line to check available images before pushing
                     docker push $DOCKER_USERNAME/calculator-app:latest  // Push the image to DockerHub with 'latest' tag
                     '''
                 }
