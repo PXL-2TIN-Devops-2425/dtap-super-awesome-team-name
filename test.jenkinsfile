@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        // Define DockerHub username as an environment variable
-        DOCKER_USER = credentials('dockerhub-username')  // Use Jenkins credentials for DockerHub username
-    }
     tools {
         nodejs 'testenvnode'  // Use the global Node.js configuration named 'testenvnode'
     }
@@ -38,7 +34,14 @@ pipeline {
         stage('Build Artifact') {
             steps {
                 echo 'Building Docker image...'
-                sh "docker build -t ${DOCKER_USER}/calculator-app ."  // Use the DockerHub username from environment variable
+                withCredentials([string(credentialsId: 'dockerhub-username', variable: 'DOCKER_USER'),
+                                 string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
+                    echo "Using DockerHub username: ${DOCKER_USER}"  // Debugging the username
+                    sh '''
+                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+                    docker build -t $DOCKER_USER/calculator-app .  // Use the DockerHub username from environment variable
+                    '''
+                }
             }
         }
 
