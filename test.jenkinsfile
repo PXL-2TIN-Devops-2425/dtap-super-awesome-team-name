@@ -43,9 +43,8 @@ pipeline {
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
                     echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Optional: for debugging
                     sh '''
-                    #!/bin/bash
-                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker build -t $DOCKER_USERNAME/calculator-app .  // Corrected docker build command with build context (.)
+                    /bin/bash -c "echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin"
+                    /bin/bash -c "docker build -t '$DOCKER_USERNAME/calculator-app' ."
                     '''
                 }
             }
@@ -59,9 +58,8 @@ pipeline {
                                                   usernameVariable: 'DOCKER_USERNAME', 
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
-                    #!/bin/bash
-                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker push $DOCKER_USERNAME/calculator-app  // Push the image to DockerHub
+                    /bin/bash -c "echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin"
+                    /bin/bash -c "docker push '$DOCKER_USERNAME/calculator-app'"
                     '''
                 }
             }
@@ -72,10 +70,9 @@ pipeline {
             steps {
                 echo 'Deploying on testserver...'
                 sh '''
-                #!/bin/bash
-                docker stop calculator-app || true  // Stop the old container if running
-                docker rm calculator-app || true  // Remove the old container
-                docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app  // Start the new container
+                /bin/bash -c "docker stop calculator-app || true"
+                /bin/bash -c "docker rm calculator-app || true"
+                /bin/bash -c "docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app"
                 '''
             }
         }
