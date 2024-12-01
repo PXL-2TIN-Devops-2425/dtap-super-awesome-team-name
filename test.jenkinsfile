@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        // Define DockerHub credentials
-        DOCKER_USER = credentials('dockerhub-credentials')  // DockerHub username and password from Jenkins credentials store
+        // DockerHub credentials are injected using Jenkins credentials store
+        DOCKER_CREDENTIALS = credentials('dockerhub-credentials')  // Ensure this matches your Jenkins credentials ID
     }
     tools {
         nodejs 'testenvnode'  // Use the global Node.js configuration named 'testenvnode'
@@ -20,8 +20,8 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'main', 
-                    credentialsId: 'github', 
+                git branch: 'main',
+                    credentialsId: 'github',  // Ensure the GitHub credentials ID is correct
                     url: 'https://github.com/RikVangeelPXL/calculator-app-finished.git'
             }
         }
@@ -41,10 +41,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                   usernameVariable: 'DOCKER_USERNAME', 
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
-                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Optional: for debugging
+                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
-                    /bin/bash -c "echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin"
-                    /bin/bash -c "docker build -t '$DOCKER_USERNAME/calculator-app' ."
+                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker build -t $DOCKER_USERNAME/calculator-app .  // Use the DockerHub username dynamically for the build
                     '''
                 }
             }
@@ -57,9 +57,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                   usernameVariable: 'DOCKER_USERNAME', 
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
-                    /bin/bash -c "echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin"
-                    /bin/bash -c "docker push '$DOCKER_USERNAME/calculator-app'"
+                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker push $DOCKER_USERNAME/calculator-app  // Push the image to DockerHub
                     '''
                 }
             }
@@ -69,11 +70,16 @@ pipeline {
         stage('Deploy on Testserver') {
             steps {
                 echo 'Deploying on testserver...'
-                sh '''
-                /bin/bash -c "docker stop calculator-app || true"
-                /bin/bash -c "docker rm calculator-app || true"
-                /bin/bash -c "docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app"
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                                                  usernameVariable: 'DOCKER_USERNAME', 
+                                                  passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo "Using Docker image: $DOCKER_USERNAME/calculator-app"  // Debugging line to confirm the correct image name
+                    sh '''
+                    docker stop calculator-app || true  // Stop the old container if running
+                    docker rm calculator-app || true  // Remove the old container
+                    docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app  // Start the new container
+                    '''
+                }
             }
         }
     }
