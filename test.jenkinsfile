@@ -39,7 +39,7 @@ pipeline {
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
                     echo "Using DockerHub username: ${DOCKER_USER}"  // Debugging the username
                     sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
                     docker build -t $DOCKER_USERNAME/calculator-app .  // Use the DockerHub username from environment variable
                     '''
                 }
