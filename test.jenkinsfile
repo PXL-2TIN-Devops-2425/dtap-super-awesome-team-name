@@ -62,7 +62,7 @@ pipeline {
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
                     docker images  // List the images to confirm the build and tagging
-                    if docker images | grep -q "$DOCKER_USERNAME/calculator-app"; then  // Check if the image is tagged correctly
+                    if docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "$DOCKER_USERNAME/calculator-app:latest"; then  // Check if the image exists
                         echo "Image exists, pushing to DockerHub..."
                         docker push $DOCKER_USERNAME/calculator-app:latest  // Push the image to DockerHub with 'latest' tag
                     else
