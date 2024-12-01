@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        // Stage 4: Build Artifact - Build the Docker image for the application
+        // Stage 4: Build Artifact - Build the Docker image for the application using traditional docker build
         stage('Build Artifact') {
             steps {
                 echo 'Building Docker image...'
@@ -44,7 +44,7 @@ pipeline {
                     echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Debugging line to confirm the username is set
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    DOCKER_BUILDKIT=0 docker build --no-cache -t $DOCKER_USERNAME/calculator-app .  // Force non-buildx builder
+                    docker build --no-cache -t $DOCKER_USERNAME/calculator-app .  // Traditional docker build
                     '''
                 }
             }
@@ -84,3 +84,4 @@ pipeline {
         }
     }
 }
+
