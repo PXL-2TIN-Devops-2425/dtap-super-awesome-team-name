@@ -44,7 +44,7 @@ pipeline {
                     echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Optional: for debugging
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker build -t $DOCKER_USERNAME/calculator-app .  // Use DockerHub username dynamically
+                    docker build -t $DOCKER_USERNAME/calculator-app .  // Corrected docker build command with build context (.)
                     '''
                 }
             }
