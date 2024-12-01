@@ -1,9 +1,30 @@
 pipeline {
     agent any
     stages {
-        stage('dtap production') {
+        stage('Deploy Prod') {
             steps {
-                echo "good luck..."
+                echo 'Pulling Docker image from DockerHub...'
+                sh '''
+                docker pull your-dockerhub-user/calculator-app  // Download de laatste versie van de Docker container van DockerHub
+                '''
+            }
+        }
+        stage('Start Prod') {
+            steps {
+                echo 'Starting Docker container on Production server...'
+                sh '''
+                docker stop calculator-app || true  // Stop oude container indien actief
+                docker rm calculator-app || true  // Verwijder oude container
+                docker run -d -p 80:3000 --name calculator-app your-dockerhub-user/calculator-app  // Start de nieuwe container op poort 80
+                '''
+            }
+        }
+        stage('Test Prod') {
+            steps {
+                echo 'Testing the application in Production...'
+                sh '''
+                curl -f http://localhost  // Test de applicatie door te controleren of deze draait op poort 80
+                '''
             }
         }
     }
