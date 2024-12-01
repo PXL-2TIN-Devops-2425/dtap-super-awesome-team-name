@@ -6,8 +6,7 @@ pipeline {
             steps {
                 echo 'Pulling Docker image from DockerHub...'
                 sh '''
-                docker pull your-dockerhub-user/calculator-app  // Haal de laatste versie van de Docker-image
-                '''
+                docker pull 'https://github.com/RikVangeelPXL/calculator-app-finished.git'
             }
         }
 
