@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+        // Define DockerHub credentials
+        DOCKER_USER = credentials('dockerhub-credentials')  // DockerHub username and password from Jenkins credentials store
+    }
     tools {
         nodejs 'testenvnode'  // Use the global Node.js configuration named 'testenvnode'
     }
@@ -34,13 +38,13 @@ pipeline {
         stage('Build Artifact') {
             steps {
                 echo 'Building Docker image...'
-                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                   usernameVariable: 'DOCKER_USERNAME', 
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
-                    echo "Using DockerHub username: ${DOCKER_USER}"  // Debugging the username
+                    echo "Using DockerHub username: ${DOCKER_USERNAME}"  // Optional: for debugging
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker build -t $DOCKER_USERNAME/calculator-app .  // Use the DockerHub username from environment variable
+                    docker build -t $DOCKER_USERNAME/calculator-app .  // Use DockerHub username dynamically
                     '''
                 }
             }
@@ -55,7 +59,7 @@ pipeline {
                                                   passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
                     echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker push $DOCKER_USERNAME/calculator-app  // Use the dynamic DockerHub username here
+                    docker push $DOCKER_USERNAME/calculator-app  // Push the image to DockerHub
                     '''
                 }
             }
@@ -68,7 +72,7 @@ pipeline {
                 sh '''
                 docker stop calculator-app || true  // Stop the old container if running
                 docker rm calculator-app || true  // Remove the old container
-                docker run -d -p 3000:3000 --name calculator-app $DOCKER_USER/calculator-app  // Start the new container
+                docker run -d -p 3000:3000 --name calculator-app $DOCKER_USERNAME/calculator-app  // Start the new container
                 '''
             }
         }
