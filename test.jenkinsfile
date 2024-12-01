@@ -1,16 +1,52 @@
 pipeline {
     agent any
-  
+    tools {
+        nodejs 'TINnode-devops'  // Gebruik de Node.js configuratie die je hebt ingesteld
+    }
     stages {
-        stage ('cleanup'){
-            steps{
-                // TODO
+        stage('Cleanup') {
+            steps {
+                echo 'Cleaning up workspace...'
+                sh 'rm -rf *'  // Verwijder alle bestanden in de workspace
             }
         }
-        stage('fetch app code') {
+        stage('Clone Repository') {
             steps {
-                // Get some code from a GitHub repository
+                echo 'Cloning repository...'
                 git branch: 'main', url: 'https://github.com/PXL-2TIN-DevOps-Resources/calculator-app-finished.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                sh 'npm install'  // Installeer Node.js dependencies
+            }
+        }
+        stage('Build Artifact') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t your-dockerhub-user/calculator-app .'  // Bouw de Docker container
+            }
+        }
+        stage('Push Artifact') {
+            steps {
+                echo 'Pushing Docker image to DockerHub...'
+                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKERHUB_PASS')]) {
+                    sh '''
+                    echo "$DOCKERHUB_PASS" | docker login -u your-dockerhub-user --password-stdin
+                    docker push your-dockerhub-user/calculator-app  // Push de Docker image naar DockerHub
+                    '''
+                }
+            }
+        }
+        stage('Deploy on Testserver') {
+            steps {
+                echo 'Deploying on testserver...'
+                sh '''
+                docker stop calculator-app || true  // Stop oude container indien actief
+                docker rm calculator-app || true  // Verwijder oude container
+                docker run -d -p 3000:3000 --name calculator-app your-dockerhub-user/calculator-app  // Start de nieuwe container
+                '''
             }
         }
     }
