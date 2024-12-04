@@ -38,7 +38,9 @@ pipeline {
             steps {
                 echo 'Testing the application in Production...'
                 sh '''
-                curl -f http://localhost  // Test de applicatie door de HTTP-statuscode te controleren
+                def prodIP = '54.85.217.106' // Vervang dit met het IP van je productie-server als nodig 
+                sh "curl -f http://${prodIP}"
+
                 '''
             }
         }
