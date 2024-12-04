@@ -5,6 +5,7 @@ opmaak met Markdown.
 
 ## 1. Docker Installeren op de Testserver
 Docker is geïnstalleerd op de Testserver, waar Jenkins draait. Dit zorgt ervoor dat de server Docker-containers kan bouwen en draaien. De installatie werd uitgevoerd via de standaard Docker-installatiemethoden voor Ubuntu.
+- `sudo apt-get install docker.io`
 
 ## 2. Toegang voor de Jenkins-gebruiker zonder sudo
 Om ervoor te zorgen dat de **jenkins** gebruiker Docker-commando's kan uitvoeren zonder `sudo`, is de **jenkins** gebruiker toegevoegd aan de Docker-groep met het volgende commando:
