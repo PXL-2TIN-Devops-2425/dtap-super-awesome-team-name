@@ -20,9 +20,6 @@ De juiste rechten zijn toegewezen aan de **Jenkins-gebruiker** voor bepaalde map
 - `chgrp`: Wijzigt de groepseigenaar van een bestand.
 - `chmod`: Wijzigt de bestandspermissies zodat Jenkins de vereiste toegang heeft.
 
-## 4. SSH-sleutels instellen voor Jenkins
-Voor toegang tot de productieomgeving is een **SSH-sleutel** gegenereerd en toegevoegd aan de **Jenkins-gebruiker**. Dit stelt Jenkins in staat om via SSH in te loggen op de **Productie-server** zonder het gebruik van een wachtwoord, wat nodig is voor de productie deployment pipeline.
-
 ## 5. Node.js Configureren via Global Tool Configuration in Jenkins
 In Jenkins is een nieuwe **Node.js-installatie** toegevoegd via de **Global Tool Configuration**. De versie van Node.js is ingesteld als **testenvnode**. Deze configuratie wordt gebruikt in de pipeline voor de **Install Dependencies** stage, waarin `npm install` wordt uitgevoerd om de benodigde dependencies van de applicatie te installeren.
 
@@ -39,3 +36,5 @@ De **`test.jenkinsfile`** bevat verschillende stages, waaronder:
 Na de deployment kan de applicatie worden getest door te navigeren naar [http://localhost:3000](http://localhost:3000) op de **Testserver**, waar de applicatie beschikbaar is.
 
 b)
+## ?. SSH-sleutels instellen voor Jenkins
+Voor toegang tot de productieomgeving is een **SSH-sleutel** gegenereerd en toegevoegd aan de **Jenkins-gebruiker**. Dit stelt Jenkins in staat om via SSH in te loggen op de **Productie-server** zonder het gebruik van een wachtwoord, wat nodig is voor de productie deployment pipeline.
