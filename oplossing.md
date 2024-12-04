@@ -1,6 +1,3 @@
-Vul onderstaande aan met de antwoorden op de vragen uit de readme.md file. Wil je de oplossingen file van opmaak voorzien? Gebruik dan [deze link](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) om informatie te krijgen over
-opmaak met Markdown.
-
 # a) Testserver
 
 ## 1. Docker Installeren op de Testserver
@@ -20,10 +17,10 @@ De juiste rechten zijn toegewezen aan de **Jenkins-gebruiker** voor bepaalde map
 - `chgrp`: Wijzigt de groepseigenaar van een bestand.
 - `chmod`: Wijzigt de bestandspermissies zodat Jenkins de vereiste toegang heeft.
 
-## 5. Node.js Configureren via Global Tool Configuration in Jenkins
+## 4. Node.js Configureren via Global Tool Configuration in Jenkins
 In Jenkins is een nieuwe **Node.js-installatie** toegevoegd via de **Global Tool Configuration**. De versie van Node.js is ingesteld als **testenvnode**. Deze configuratie wordt gebruikt in de pipeline voor de **Install Dependencies** stage, waarin `npm install` wordt uitgevoerd om de benodigde dependencies van de applicatie te installeren.
 
-## 6. Opstellen van de `test.jenkinsfile` Pipeline
+## 5. Opstellen van de `test.jenkinsfile` Pipeline
 De **`test.jenkinsfile`** bevat verschillende stages, waaronder:
 - **Cleanup Stage**: Verwijdert alle bestanden in de werkruimte om te zorgen voor een schone start.
 - **Clone Repository**: Haalt de laatste versie van de applicatiecode op van GitHub.
