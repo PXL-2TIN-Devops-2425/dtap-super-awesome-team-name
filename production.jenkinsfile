@@ -4,6 +4,7 @@ pipeline {
         // Define DockerHub credentials
         DOCKER_USER = credentials('dockerhub-credentials')
         DOCKER_USERNAME = "${DOCKER_USER_USR}"
+        PROD_IP = '54.85.217.106'
     }
     stages {
         // Stage 1: Deploy Prod - Haal de laatste versie van de Docker-image van DockerHub
@@ -37,10 +38,8 @@ pipeline {
         stage('Test Prod') {
             steps {
                 echo 'Testing the application in Production...'
-                sh '''
-                def prodIP = '54.85.217.106' // Vervang dit met het IP van je productie-server als nodig 
-                sh "curl -f http://${prodIP}"
-
+                sh ''' 
+                curl -f http://${PROD_IP}
                 '''
             }
         }
