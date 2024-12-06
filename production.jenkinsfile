@@ -5,7 +5,7 @@ pipeline {
         DOCKER_USER = credentials('dockerhub-credentials')
         DOCKER_USERNAME = "${DOCKER_USER_USR}"
         PROD_USER = 'ec2-user'
-        PROD_IP = '54.85.217.106'
+        PROD_IP = '174.129.56.150'
     }
     stages {
         // Stage 1: Deploy Prod - Haal de laatste versie van de Docker-image van DockerHub
@@ -33,7 +33,7 @@ pipeline {
                 //docker run -d -p 80:3000 --name calculator-app $DOCKER_USERNAME/calculator-app
                 //'''
                 //this is a test
-                sshagent(['your-ssh-key-id']) { // Je Jenkins SSH-sleutel-ID
+                sshagent(['ssh-key-id']) { // Je Jenkins SSH-sleutel-ID
                     echo 'Pulling the latest Docker image on production server...'
                     sh '''
                     ssh ${PROD_USER}@${PROD_IP} << EOF
