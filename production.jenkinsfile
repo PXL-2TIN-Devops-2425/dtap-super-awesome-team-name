@@ -4,6 +4,7 @@ pipeline {
         // Define DockerHub credentials
         DOCKER_USER = credentials('dockerhub-credentials')
         DOCKER_USERNAME = "${DOCKER_USER_USR}"
+        PROD_USER = 'ec2-user'
         PROD_IP = '54.85.217.106'
     }
     stages {
@@ -25,18 +26,18 @@ pipeline {
         // Stage 2: Start Prod - Start de container op de productie-server op poort 80
         stage('Start Prod') {
             steps {
-                echo 'Starting Docker container on Production server...'
-                sh '''
-                docker stop calculator-app || true  // Stop de oude container indien actief
-                docker rm calculator-app || true  // Verwijder de oude container
-                docker run -d -p 80:3000 --name calculator-app $DOCKER_USERNAME/calculator-app
-                '''
+                //echo 'Starting Docker container on Production server...'
+                //sh '''
+               // docker stop calculator-app || true  // Stop de oude container indien actief
+                //docker rm calculator-app || true  // Verwijder de oude container
+                //docker run -d -p 80:3000 --name calculator-app $DOCKER_USERNAME/calculator-app
+                //'''
                 //this is a test
                 sshagent(['your-ssh-key-id']) { // Je Jenkins SSH-sleutel-ID
                     echo 'Pulling the latest Docker image on production server...'
                     sh '''
-                    ssh ${PROD_USER}@${PROD_SERVER} << EOF
-                    docker pull ${DOCKER_IMAGE}
+                    ssh ${PROD_USER}@${PROD_IP} << EOF
+                    docker run -d -p 80:3000 --name calculator-app $DOCKER_USERNAME/calculator-app
                     EOF
                     '''
                 }
