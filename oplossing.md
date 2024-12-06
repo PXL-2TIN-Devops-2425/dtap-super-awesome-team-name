@@ -32,9 +32,14 @@ De **`test.jenkinsfile`** bevat verschillende stages, waaronder:
 ## 7. Testen van de Applicatie
 Na de deployment kan de applicatie worden getest door te navigeren naar [http://localhost:3000](http://localhost:3000) op de **Testserver**, waar de applicatie beschikbaar is.
 
+![testServer1](https://github.com/user-attachments/assets/962a9e73-d8a4-499a-9866-1d7b70e3f2b7)
+![testServer2](https://github.com/user-attachments/assets/c25aef63-232d-4604-919b-de27f1ec596f)
+
 # B) Productionserver
 ## ?. SSH-sleutels instellen voor Jenkins
 Voor toegang tot de productieomgeving is een **SSH-sleutel** gegenereerd en toegevoegd aan de **Jenkins-gebruiker**. Dit stelt Jenkins in staat om via SSH in te loggen op de **Productie-server** zonder het gebruik van een wachtwoord, wat nodig is voor de productie deployment pipeline.
+<img width="984" alt="ec2-user" src="https://github.com/user-attachments/assets/fb8e85e2-71f2-4d6e-90e0-f421b43f6955">
+![productionServer](https://github.com/user-attachments/assets/c6177d26-c8a8-40e4-b7b9-31dcc38b194c)
 
 De volgende comandos hebben we gebruikt om docker te instaleren op de productie server
 
