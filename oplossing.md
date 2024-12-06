@@ -35,3 +35,12 @@ Na de deployment kan de applicatie worden getest door te navigeren naar [http://
 # B) Productionserver
 ## ?. SSH-sleutels instellen voor Jenkins
 Voor toegang tot de productieomgeving is een **SSH-sleutel** gegenereerd en toegevoegd aan de **Jenkins-gebruiker**. Dit stelt Jenkins in staat om via SSH in te loggen op de **Productie-server** zonder het gebruik van een wachtwoord, wat nodig is voor de productie deployment pipeline.
+
+De volgende comandos hebben we gebruikt om docker te instaleren op de productie server
+
+sudo dnf install docker -y
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker ec2-user
+newgrp docker
+
