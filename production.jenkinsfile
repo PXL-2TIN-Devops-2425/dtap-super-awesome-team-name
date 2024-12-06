@@ -39,9 +39,8 @@ pipeline {
                     ssh-keyscan -H 174.129.56.150 >> ~/.ssh/known_hosts
                     '''
                     sh '''
-                    ssh ${PROD_USER}@${PROD_IP} << EOF
+                    ssh ${PROD_USER}@${PROD_IP}
                     docker run -d -p 80:3000 --name calculator-app $DOCKER_USERNAME/calculator-app
-                    EOF
                     '''
                 }
             }
