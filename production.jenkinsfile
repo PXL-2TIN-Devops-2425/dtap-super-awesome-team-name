@@ -5,7 +5,7 @@ pipeline {
         DOCKER_USER = credentials('dockerhub-credentials')
         DOCKER_USERNAME = "${DOCKER_USER_USR}"
         PROD_USER = 'ec2-user'
-        PROD_IP = '174.129.56.150'
+        PROD_IP = '54.208.17.239'
     }
     stages {
         // Stage 1: Deploy Prod - Pull the latest Docker image from DockerHub
